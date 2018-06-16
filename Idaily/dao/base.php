@@ -1,4 +1,5 @@
 <?php
+
 // Para verificar se o arquivo já foi importado
 if (!defined("CONST_BASE.PHP")) {
   define("CONST_BASE.PHP", "BASE.PHP importado");
@@ -37,8 +38,8 @@ if (!defined("CONST_BASE.PHP")) {
 // Executa uma consulta e retorna o resultado, se houver
   function executar_SQL($SQL)
   {
-    if ($debug === true)
-      echo '<br/>' . $SQL . '<br/>';
+    // if ($debug === true)
+    //   echo '<br/>' . $SQL . '<br/>';
 	// Realiza a consulta
     $conexao = conectar();
     $resultado = mysqli_query($conexao, $SQL);

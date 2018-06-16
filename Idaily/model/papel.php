@@ -1,6 +1,6 @@
 <?php
 
-class papel
+class Papel
 {
   private $id;
   private $nome;

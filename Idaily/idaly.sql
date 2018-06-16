@@ -54,4 +54,10 @@ CREATE TABLE diaria_situacao
     FOREIGN KEY(diaria_id) REFERENCES diaria(id),
     FOREIGN KEY (usuario_id) REFERENCES usuario(id)
     
-)
+);
+
+INSERT INTO idaily.papel(nome,descricao)VALUES('admin','Administrador do sistema');
+INSERT INTO idaily.papel(nome,descricao)VALUES('Auditor','Responsável por executar auditorias no sistema');
+INSERT INTO idaily.papel(nome,descricao)VALUES('Aprovador','Responsável por aprovar as diárias');
+INSERT INTO idaily.papel(nome,descricao)VALUES('Solicitante','Usuário comum que faz a solicitação das diárias');
+INSERT INTO idaily.usuario(papel_id,nome,usuario,senha)VALUES(1,'Administrador','admin',md5('123'));

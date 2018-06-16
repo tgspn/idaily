@@ -50,11 +50,11 @@ class Usuario
 
   public function getPapel()
   {
-    return $this->$papel;
+    return $this->papel;
   }
 
   public function setPapel($papel)
   {
-    $this->papel=$papel;
+    $this->papel = $papel;
   }
 }
