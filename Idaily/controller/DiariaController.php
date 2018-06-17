@@ -3,6 +3,10 @@ require_once "DAO/diariaDAO.php";
 require_once "ControllerBase.php";
 class DiariaController extends ControllerBase
 {
+  public function __construct()
+  {
+    parent::__construct("diaria");
+  }
   public function Tipo($value = '')
   {
     $dao = new DiariaDAO();

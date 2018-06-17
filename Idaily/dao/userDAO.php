@@ -101,6 +101,7 @@ class userDAO
     $_SESSION["loggedIn"] = "false";
     unset($_SESSION["snome"]);
     unset($_SESSION["parte"]);
+    unset($_SESSION["current_user"]);
   }
 }
 

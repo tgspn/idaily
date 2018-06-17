@@ -69,39 +69,7 @@ class UsuarioController
       require_once 'view/usuario/novo.php';
     }
   }
-  public function Login()
-  {
-    try {
-      $dao = new userDAO();
-// Atribui os valores digitados no formulário aos campos correspondentes
-
-      $nomeusuario = isset($_POST["username"]) ? addslashes(trim($_POST["username"])) : false;
-      $senha = (strlen($_POST["password"]) > 0) ? md5(trim($_POST["password"])) : false;
-      // Se o usuário não preencheu um dos campos é redirecionado à pagina de login
-      if (!$nomeusuario || !$senha) {
-        header("Location: login?erro=2");
-        exit;
-      }
-
-
-      $user = new Usuario();
-      $user->setUsuario($nomeusuario);
-      $user->setSenha($senha);
-
-      if ($dao->Login($user)) {
-        header("Location: /");
-
-        exit;
-      } else {
-        header("Location: login?erro=1");
-        exit;
-      }
-
-    } catch (Exception $err) {
-      header("Location: login?erro=3");
-    }
-
-  }
+  
 
   public function Logout()
   {

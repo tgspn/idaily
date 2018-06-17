@@ -6,53 +6,68 @@ include_once 'model/usuario.php';
 require_once 'view/ViewHelper.php';
 function __autoload($class_name)
 {
-    require_once 'controller/' . $class_name . '.php';
+  require_once 'controller/' . $class_name . '.php';
 }
-
+$isLogged=false;
 $isAdmin = false;
+$isAprovador = false;
 if (isset($_SESSION["current_user"])) {
-    $user = unserialize($_SESSION["current_user"]);
+  $isLogged=true;
+  $user = unserialize($_SESSION["current_user"]);
 
-    if ($user->getPapel()->getNome() == "admin") {
-        $isAdmin = true;
-    }
-} elseif (!isset($_SESSION['login']) || !$_SESSION["login"]) {
-    $_SESSION["login"] = true;
-    header("Location:Login");
+  if ($user->getPapel()->getNome() == "admin") {
+    $isAdmin = true;
+  }
+  if ($user->getPapel()->getNome() == "Aprovador") {
+    $isAprovador = true;
+  }
+
+} else if (!isToLogin() && !isset($_SESSION["Tologin"])) {
+
+  $_SESSION["Tologin"] = true;
+  header("Location:Login");
 }
+function isToLogin()
+{
+  $url = parse_url($_SERVER['REQUEST_URI']);
+  $paths = explode("/", $url["path"]);
+  $classe = count($paths) > 1 && $paths[1] === "login";
+  $metodo = count($paths) > 2 && $paths[2] !== "login";
 
+  return $classe && $metodo;
+}
 function RenderClass()
 {
-    $url = parse_url($_SERVER['REQUEST_URI']);
-    $paths = explode("/", $url["path"]);
-    $classe = count($paths) > 1 && $paths[1] !== "" ? $paths[1] : 'home';
-    $metodo = count($paths) > 2 && $paths[2] !== "" ? $paths[2] : 'index';
+  $url = parse_url($_SERVER['REQUEST_URI']);
+  $paths = explode("/", $url["path"]);
+  $classe = count($paths) > 1 && $paths[1] !== "" ? $paths[1] : 'home';
+  $metodo = count($paths) > 2 && $paths[2] !== "" ? $paths[2] : 'index';
 
-    $file = 'controller/' . $classe . 'Controller.php';
-    $classe .= "Controller";
+  $file = 'controller/' . $classe . 'Controller.php';
+  $classe .= "Controller";
 
-    if (file_exists($file)) {
-        require_once $file;
+  if (file_exists($file)) {
+    require_once $file;
 
-        $obj = new $classe();
-        $obj->$metodo();
-    } else {
-        echo "Controler não encontrado";
-    }
+    $obj = new $classe();
+    $obj->$metodo();
+  } else {
+    echo "Controler não encontrado";
+  }
 }
 function GetErrorMensage()
 {
-    $url = $_SERVER['REQUEST_URI'];
-    $parts = parse_url($url);
-    $query = [];
-    if (array_key_exists("query", $parts) && $parts["query"]) {
-        parse_str($parts['query'], $query);
-    }
+  $url = $_SERVER['REQUEST_URI'];
+  $parts = parse_url($url);
+  $query = [];
+  if (array_key_exists("query", $parts) && $parts["query"]) {
+    parse_str($parts['query'], $query);
+  }
 
-    if (array_key_exists("erro", $query) && $query["erro"]) {
-        $erro = $query['erro'];
-        $mensagem = "";
-        switch ($erro) {
+  if (array_key_exists("erro", $query) && $query["erro"]) {
+    $erro = $query['erro'];
+    $mensagem = "";
+    switch ($erro) {
       case "1":
         $mensagem = "Usuário ou senha errado";
         break;
@@ -75,8 +90,8 @@ function GetErrorMensage()
         break;
 
     }
-        echo "<div style='color:red'>" . $mensagem . "</div><br/>";
-    }
+    echo "<div style='color:red'>" . $mensagem . "</div><br/>";
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -121,28 +136,34 @@ function GetErrorMensage()
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
+
           <?php
+          if($isLogged){
+            echo '  <li class="nav-item active">
+                <a class="nav-link" href="/">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>';
           if ($isAdmin) {
-              echo '<li class="nav-item">
+            echo '<li class="nav-item">
               <a class="nav-link" href="/usuario">Usuarios</a>
               </li>';
-              echo '<li class="nav-item">
+            echo '<li class="nav-item">
                 <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
                 </li>';
           }
-          ?>
+          if ($isAprovador) {
+            echo '<li class="nav-item">
+              <a class="nav-link" href="#">Aprovar Diaria</a>
+            </li>';
+          }
 
-          <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
+
+        echo '<li class="nav-item">
+            <a class="nav-link" href="/Login/Sair">Sair</a>
+          </li>';
+        }
+          ?>
         </ul>
       </div>
     </div>

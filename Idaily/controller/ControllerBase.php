@@ -5,8 +5,10 @@
  */
 class ControllerBase
 {
-  public function __construct()
+  protected $controller;
+  public function __construct($controller)
   {
+    $this->controller = $controller;
   }
   protected function IsPost()
   {
@@ -14,12 +16,13 @@ class ControllerBase
   }
   protected function RenderView($view)
   {
-    require_once 'view/diaria/' . $view . '.php';
+    require_once 'view/' . $this->controller . '/' . $view . '.php';
   }
 
-  protected function RedirectTo($view, $controller)
+  protected function RedirectTo($view, $controller = "")
   {
-    header("Location:" . join("/", array($controller, $view)));
+    $url = join("/", array($controller, $view));
+    header("Location:" . $url);
   }
   protected function SetModel($obj)
   {
