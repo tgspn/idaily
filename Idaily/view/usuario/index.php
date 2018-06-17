@@ -1,10 +1,10 @@
 <?php
-$users = [];
-$users = unserialize($_SESSION["model"]);
-$_SESSION["model"] = "";
+
+$users = ViewHelper::GetModel();
+
 function renderRow($nome, $usuario, $tipo)
 {
-  return '<tr>
+    return '<tr>
             <th scope="col">' . $nome . '</th>
             <th scope="col">' . $usuario . '</th>
             <th scope="col">' . $tipo . '</th>
@@ -29,7 +29,7 @@ function renderRow($nome, $usuario, $tipo)
     <tbody>
       <?php
       foreach ($users as $user => $value) {
-        echo renderRow($value->getNome(), $value->getUsuario(), $value->getPapel()->getNome());
+          echo renderRow($value->getNome(), $value->getUsuario(), $value->getPapel()->getNome());
       }
       ?>
     </tbody>

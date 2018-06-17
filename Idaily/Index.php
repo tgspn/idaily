@@ -3,57 +3,56 @@ session_start();
 $GLOBALS["debug"] = false;
 include_once 'model/papel.php';
 include_once 'model/usuario.php';
-
+require_once 'view/ViewHelper.php';
 function __autoload($class_name)
 {
-  //$class_name = str_replace("Controller", "", $class_name);
-  require_once 'controller/' . $class_name . '.php';
+    require_once 'controller/' . $class_name . '.php';
 }
 
 $isAdmin = false;
 if (isset($_SESSION["current_user"])) {
-  $user = unserialize($_SESSION["current_user"]);
+    $user = unserialize($_SESSION["current_user"]);
 
-  if ($user->getPapel()->getNome() == "admin") {
-    $isAdmin = true;
-  }
-} else if (!isset($_SESSION['login']) || !$_SESSION["login"]) {
-  $_SESSION["login"] = true;
-  header("Location:Login");
+    if ($user->getPapel()->getNome() == "admin") {
+        $isAdmin = true;
+    }
+} elseif (!isset($_SESSION['login']) || !$_SESSION["login"]) {
+    $_SESSION["login"] = true;
+    header("Location:Login");
 }
 
 function RenderClass()
 {
-  $url = parse_url($_SERVER['REQUEST_URI']);
-  $paths = explode("/", $url["path"]);
-  $classe = count($paths) > 1 && $paths[1] !== "" ? $paths[1] : 'home';
-  $metodo = count($paths) > 2 && $paths[2] !== "" ? $paths[2] : 'index';
+    $url = parse_url($_SERVER['REQUEST_URI']);
+    $paths = explode("/", $url["path"]);
+    $classe = count($paths) > 1 && $paths[1] !== "" ? $paths[1] : 'home';
+    $metodo = count($paths) > 2 && $paths[2] !== "" ? $paths[2] : 'index';
 
-  $file = 'controller/' . $classe . 'Controller.php';
-  $classe .= "Controller";
+    $file = 'controller/' . $classe . 'Controller.php';
+    $classe .= "Controller";
 
-  if (file_exists($file)) {
-    require_once $file;
+    if (file_exists($file)) {
+        require_once $file;
 
-    $obj = new $classe();
-    $obj->$metodo();
-  } else {
-    echo "Controler não encontrado";
-  }
+        $obj = new $classe();
+        $obj->$metodo();
+    } else {
+        echo "Controler não encontrado";
+    }
 }
 function GetErrorMensage()
 {
-  $url = $_SERVER['REQUEST_URI'];
-  $parts = parse_url($url);
-  $query = [];
-  if ($parts["query"]) {
-    parse_str($parts['query'], $query);
-  }
+    $url = $_SERVER['REQUEST_URI'];
+    $parts = parse_url($url);
+    $query = [];
+    if (array_key_exists("query", $parts) && $parts["query"]) {
+        parse_str($parts['query'], $query);
+    }
 
-  if ($query["erro"]) {
-    $erro = $query['erro'];
-    $mensagem = "";
-    switch ($erro) {
+    if (array_key_exists("erro", $query) && $query["erro"]) {
+        $erro = $query['erro'];
+        $mensagem = "";
+        switch ($erro) {
       case "1":
         $mensagem = "Usuário ou senha errado";
         break;
@@ -76,8 +75,8 @@ function GetErrorMensage()
         break;
 
     }
-    echo "<div style='color:red'>" . $mensagem . "</div><br/>";
-  }
+        echo "<div style='color:red'>" . $mensagem . "</div><br/>";
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -94,7 +93,7 @@ function GetErrorMensage()
 
   <!-- Bootstrap core CSS -->
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
+  <script src="/vendor/jquery/jquery.min.js"></script>
   <!-- Custom styles for this template -->
   <style>
     body {
@@ -129,9 +128,12 @@ function GetErrorMensage()
           </li>
           <?php
           if ($isAdmin) {
-            echo '<li class="nav-item">
+              echo '<li class="nav-item">
               <a class="nav-link" href="/usuario">Usuarios</a>
               </li>';
+              echo '<li class="nav-item">
+                <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
+                </li>';
           }
           ?>
 
@@ -163,7 +165,7 @@ GetErrorMensage();
   </div>
 
   <!-- Bootstrap core JavaScript -->
-  <script src="/vendor/jquery/jquery.min.js"></script>
+
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 </body>

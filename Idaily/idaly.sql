@@ -20,16 +20,17 @@ CREATE TABLE usuario
 
 CREATE TABLE diaria_tipo
 (
-	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL UNIQUE,
-    descricao VARCHAR(1000)
+    descricao VARCHAR(1000),
+    valor DECIMAL(10,2) 
 );
 
 CREATE TABLE diaria
 (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     diaria_tipo_id INT NOT NULL,
-    valor DECIMAL(10,2) NOT NULL,
+    quantidade INT NOT NULL,
     data_criacao DATETIME DEFAULT NOW(),    
     status VARCHAR(1),
     pedido VARCHAR(1000),
