@@ -1,5 +1,6 @@
 <?php
 require_once 'ControllerBase.php';
+require_once 'UsuarioController.php';
 require_once 'Dao/userDAO.php';
 class LoginController extends ControllerBase
 {
@@ -32,7 +33,7 @@ class LoginController extends ControllerBase
 
       if ($dao->Login($user)) {
         unset($_SESSION["Tologin"]);
-        $this->RedirectTo("");
+        $this->RedirectTo("/");
 
         exit;
       } else {
@@ -44,13 +45,65 @@ class LoginController extends ControllerBase
       $this->RedirectTo("login?erro=3");
     }
   }
+  public function Registro()
+  {
+    if ($this->IsPost()) {
 
+      $controller = new UsuarioController();
+
+      $usuario = isset($_POST["usuario"]) ? addslashes(trim($_POST["usuario"])) : false;
+      $senha = (strlen($_POST["senha"]) > 0) ? md5(trim($_POST["senha"])) : false;
+      $confirmarsenha = (strlen($_POST["confirmar_senha"]) > 0) ? md5(trim($_POST["confirmar_senha"])) : false;
+      $nome = isset($_POST["nome"]) ? addslashes(trim($_POST["nome"])) : false;
+      $papel_id = isset($_POST["papel_id"]) ? addslashes(trim($_POST["papel_id"])) : false;
+
+
+      if (!$usuario || !$senha || !$confirmarsenha || !$nome || !$papel_id) {
+        $this->RedirectTo("registro?erro=2");
+        exit;
+      }
+
+        // Se os valores dos campos senha e confirmação de senha forem diferentes
+      if ($senha != $confirmarsenha) {
+        $this->RedirectTo("registro?erro=5");
+        exit;
+      }
+
+      $user = new Usuario();
+      $papel = new Papel();
+      $papel->setId($papel_id);
+
+      $user->setNome($nome);
+      $user->setSenha($senha);
+      $user->setPapel($papel);
+      $user->setUsuario($usuario);
+
+      try {
+        $dao = new userDAO();
+        if ($dao->CheckDisponibilidadeDeUsername($user->getUsuario())) {
+
+          if ($dao->Cadastrar($user)) {
+            $this->RedirectTo("","Login");
+          }
+
+        } else {
+          $this->RedirectTo("registro?erro=6");
+          exit;
+        }
+      } catch (Exception $ex) {
+        $this->RedirectTo("registro?erro=7");
+      }
+
+    } else {
+      $this->RenderView("registro");
+    }
+  }
   public function Sair()
   {
     unset($_SESSION["Tologin"]);
     $dao = new userDAO();
     $dao->Logout();
-    $this->RedirectTo("");
+    $this->RedirectTo("/");
   }
 }
 ?>

@@ -9,19 +9,22 @@ abstract class DAOBase
 
   public function __construct($table)
   {
-        // Constantes do servidor e do banco de dados
-    define('S_SERVIDOR', 'localhost');
-    define('BD_USUARIO', 'root');
-    define('BD_SENHA', 'masterkey');
-    define('BD_BASEDEDADOS', 'idaily');
+    if (!defined('BD_CONFIGURADO')) {
+      define('BD_CONFIGURADO', 'true');
+
+      define('S_SERVIDOR', 'localhost');
+      define('BD_USUARIO', 'root');
+      define('BD_SENHA', 'masterkey');
+      define('BD_BASEDEDADOS', 'idaily');
+    }
     $this->table = $table;
   }
   abstract protected function FillObject($row);
   abstract public function Salvar($obj);
 
-  protected function Select($colunas = '', $where = '', $extra = '')
+  protected function Select($colunas = '', $where = '', $extra = '', $join = '')
   {
-    $sql = $this->ConstruirSelect($colunas, $where, $extra);
+    $sql = $this->ConstruirSelect($colunas, $where, $extra, $join);
 
     $result = $this->executar_SQL($sql);
 
@@ -34,18 +37,28 @@ abstract class DAOBase
 
     return $id;
   }
-  private function ConstruirSelect($colunas = '', $where = '', $extra = '')
+
+  protected function Update($valores, int $id)
+  {
+    $sql = "UPDATE " . $this->table . " SET " . $valores . " WHERE id = " . $id;
+    $id = $this->executar_Insert_SQL($sql);
+
+    return $id;
+  }
+  private function ConstruirSelect($colunas = '', $where = '', $extra = '', $join = '')
   {
     if (!isset($colunas)) {
       $colunas = '*';
     }
 
     $sql = "SELECT " . $colunas . " FROM " . $this->table;
-    if (isset($where)) {
-      $sql .= " " . $where;
+    if ($join !== "")
+      $sql .= " " . $join;
+    if ($where !== "") {
+      $sql .= " WHERE " . $where;
     }
 
-    if (isset($extra)) {
+    if ($extra !== "") {
       $sql .= " " . $extra;
     }
     return $sql;

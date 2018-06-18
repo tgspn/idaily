@@ -34,3 +34,4 @@ if (in_array('erro', $query)) {
 	<input type="password" name="password" placeholder="password"/>
 	<button type="submit">login</button>
 </form>
+<a href="login/registro">Criar conta</a>

@@ -4,15 +4,17 @@ $GLOBALS["debug"] = false;
 include_once 'model/papel.php';
 include_once 'model/usuario.php';
 require_once 'view/ViewHelper.php';
+require_once 'StringHelper.php';
+
 function __autoload($class_name)
 {
   require_once 'controller/' . $class_name . '.php';
 }
-$isLogged=false;
+$isLogged = false;
 $isAdmin = false;
 $isAprovador = false;
 if (isset($_SESSION["current_user"])) {
-  $isLogged=true;
+  $isLogged = true;
   $user = unserialize($_SESSION["current_user"]);
 
   if ($user->getPapel()->getNome() == "admin") {
@@ -22,19 +24,19 @@ if (isset($_SESSION["current_user"])) {
     $isAprovador = true;
   }
 
-} else if (!isToLogin() && !isset($_SESSION["Tologin"])) {
+} else if (!isToLogin()) {
 
-  $_SESSION["Tologin"] = true;
-  header("Location:Login");
+  //$_SESSION["Tologin"] = true;
+  header("Location:/Login");
+  exit;
 }
 function isToLogin()
 {
   $url = parse_url($_SERVER['REQUEST_URI']);
   $paths = explode("/", $url["path"]);
-  $classe = count($paths) > 1 && $paths[1] === "login";
-  $metodo = count($paths) > 2 && $paths[2] !== "login";
+  $classe = count($paths) > 1 && strtolower($paths[1]) === "login";
 
-  return $classe && $metodo;
+  return $classe;
 }
 function RenderClass()
 {
@@ -121,7 +123,17 @@ function GetErrorMensage()
       }
     }
   </style>
-
+  <style>
+  fieldset {
+    border: 1px #ccc solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  fieldset legend{
+    font-size: 17px;
+  }
+  </style>
 </head>
 
 <body>
@@ -138,31 +150,36 @@ function GetErrorMensage()
         <ul class="navbar-nav ml-auto">
 
           <?php
-          if($isLogged){
+          if ($isLogged) {
             echo '  <li class="nav-item active">
                 <a class="nav-link" href="/">Home
                   <span class="sr-only">(current)</span>
                 </a>
               </li>';
-          if ($isAdmin) {
-            echo '<li class="nav-item">
+            if ($isAdmin) {
+              echo '<li class="nav-item">
               <a class="nav-link" href="/usuario">Usuarios</a>
               </li>';
-            echo '<li class="nav-item">
+              echo '<li class="nav-item">
                 <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
                 </li>';
-          }
-          if ($isAprovador) {
-            echo '<li class="nav-item">
-              <a class="nav-link" href="#">Aprovar Diaria</a>
+            }
+            if ($isAprovador) {
+              echo '<li class="nav-item">
+              <a class="nav-link" href="/Diaria/Aprovar">Aprovar Diaria</a>
             </li>';
-          }
+            }
 
+            if (ViewHelper::InPapel("solicitante")) {
+              echo '<li class="nav-item">
+              <a class="nav-link" href="/Diaria/Listar">Diarias</a>
+            </li>';
+            }
 
-        echo '<li class="nav-item">
+            echo '<li class="nav-item">
             <a class="nav-link" href="/Login/Sair">Sair</a>
           </li>';
-        }
+          }
           ?>
         </ul>
       </div>
