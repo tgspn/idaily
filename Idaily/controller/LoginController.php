@@ -22,7 +22,7 @@ class LoginController extends ControllerBase
       $senha = (strlen($_POST["password"]) > 0) ? md5(trim($_POST["password"])) : false;
       // Se o usuário não preencheu um dos campos é redirecionado à pagina de login
       if (!$nomeusuario || !$senha) {
-        $this->RedirectTo("login?erro=2");
+        $this->RedirectTo("index?erro=2");
         exit;
       }
 
@@ -37,12 +37,12 @@ class LoginController extends ControllerBase
 
         exit;
       } else {
-        $this->RedirectTo("login?erro=1");
+        $this->RedirectTo("index?erro=1");
         exit;
       }
 
     } catch (Exception $err) {
-      $this->RedirectTo("login?erro=3");
+      $this->RedirectTo("index?erro=3");
     }
   }
   public function Registro()
@@ -83,7 +83,7 @@ class LoginController extends ControllerBase
         if ($dao->CheckDisponibilidadeDeUsername($user->getUsuario())) {
 
           if ($dao->Cadastrar($user)) {
-            $this->RedirectTo("","Login");
+            $this->RedirectTo("/");
           }
 
         } else {

@@ -106,7 +106,7 @@ function GetErrorMensage()
   <meta name="description" content="">
   <meta name="author" content="Tiago Spana">
 
-  <title>Bare - Start Bootstrap Template</title>
+  <title>Sistema de gerenciamento de diárias</title>
 
   <!-- Bootstrap core CSS -->
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -137,9 +137,9 @@ function GetErrorMensage()
 </head>
 
 <body>
-
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <?php
+  if($isLogged){
+echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="/">IDaily</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
@@ -147,9 +147,9 @@ function GetErrorMensage()
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto">';
 
-          <?php
+
           if ($isLogged) {
             echo '  <li class="nav-item active">
                 <a class="nav-link" href="/">Home
@@ -160,13 +160,16 @@ function GetErrorMensage()
               echo '<li class="nav-item">
               <a class="nav-link" href="/usuario">Usuarios</a>
               </li>';
-              echo '<li class="nav-item">
-                <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
-                </li>';
+              // echo '<li class="nav-item">
+              //   <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
+              //   </li>';
             }
-            if ($isAprovador) {
+            if (ViewHelper::InPapel("aprovador")) {
               echo '<li class="nav-item">
-              <a class="nav-link" href="/Diaria/Aprovar">Aprovar Diaria</a>
+              <a class="nav-link" href="/Diaria/Listar">Minhas Diarias</a>
+            </li>';
+              echo '<li class="nav-item">
+              <a class="nav-link" href="/Diaria/Aprovar">Aprovar Diarias</a>
             </li>';
             }
 
@@ -176,16 +179,35 @@ function GetErrorMensage()
             </li>';
             }
 
+            if(ViewHelper::InPapel("auditor"))
+            {
+              echo '<li class="nav-item">
+              <a class="nav-link" href="/Diaria/Listar">Minhas Diarias</a>
+            </li>';
+            echo '<li class="nav-item">
+            <a class="nav-link" href="/Diaria/Pagar">Pagar Diarias</a>
+          </li>';
+            }
+            if(ViewHelper::InPapel('admin')||ViewHelper::InPapel('auditor')||ViewHelper::InPapel('aprovador'))
+            {
+              echo "<li class='nav-item'><a href='/Diaria/Relatorio' class='nav-link'>Relatório</a></li>";
+            }
+
+
+            echo "<li class='nav-item'><a class='nav-link'>&nbsp;&nbsp;".ViewHelper::GetCurrentUser()->getNome()."</a></li>";
+
             echo '<li class="nav-item">
             <a class="nav-link" href="/Login/Sair">Sair</a>
           </li>';
+
           }
-          ?>
+echo '
         </ul>
       </div>
     </div>
-  </nav>
-
+  </nav>';
+}
+  ?>
   <!-- Page Content -->
   <div class="container">
 
@@ -205,7 +227,25 @@ GetErrorMensage();
   <!-- Bootstrap core JavaScript -->
 
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+  <script>
+  (function() {
+    'use strict';
+    window.addEventListener('load', function() {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation');
+      // Loop over them and prevent submission
+      var validation = Array.prototype.filter.call(forms, function(form) {
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
+  </script>
 </body>
 
 </html>

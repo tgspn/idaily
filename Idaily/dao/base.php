@@ -52,7 +52,6 @@ if (!defined("CONST_BASE.PHP")) {
   }
   function executar_Insert_SQL($SQL)
   {
-    echo '<br/>' . $SQL . '<br/>';
 	// Realiza a consulta
     $conexao = conectar();
     $resultado = mysqli_query($conexao, $SQL);

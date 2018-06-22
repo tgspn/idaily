@@ -42,8 +42,8 @@ class userDAO
         "VALUES('" . $usuario->getPapel()->getId() . "','" . $usuario->getNome() . "','" . $usuario->getUsuario() . "','" . $usuario->getSenha() . "');";
       $id = executar_Insert_SQL($sql);
 
-      echo "lastId={$id}";
       $usuario->setid($id);
+      return true;
     } else {
       throw new exception('Já existe um usuário com esse nome');
     }

@@ -6,6 +6,9 @@ require_once "ControllerBase.php";
 require_once 'model/diariasituacao.php';
 require_once 'DAO/DiariaSituacaoDAO.php';
 require_once 'DAO/ViewDiariaSituacaoDAO.php';
+require_once 'model/GastoPorMes.php';
+require_once 'model/diarioTipo.php';
+
 class DiariaController extends ControllerBase
 {
   public function __construct()
@@ -15,68 +18,147 @@ class DiariaController extends ControllerBase
   public function Listar()
   {
     $dao = new DiariaDAO();
-    if ($this->InPapel("auditor")) {
 
-      $this->SetModel($dao->Listar());
-      $this->RenderView("auditor");
-    } else if ($this->InPapel("solicitante")) {
-      $list = $dao->Listar('solicitante_id=' . $this->currentUser->getId());
+    $list = $dao->Listar('solicitante_id=' . $this->currentUser->getId());
+    $this->SetModel($list);
+    $this->RenderView("solicitante");
+  }
+  public function Relatorio()
+  {
+    if ($this->InPapel("admin") || $this->InPapel("auditor") || $this->InPapel('aprovador')) {
+
+      $dao = new ViewDiariaSituacaoDAO();
+      $filtro = '';
+      if (isset($_GET["solicitante"]) && trim($_GET["solicitante"]) != '') {
+        $solicitante = addslashes(trim($_GET["solicitante"]));
+        $filtro = " solicitante like '%" . $solicitante . "%'";
+      }
+      if (isset($_GET["status"]) && trim($_GET["status"]) != '') {
+        $val = addslashes(trim($_GET["status"]));
+        if ($filtro != '')
+          $filtro .= ' AND ';
+        $filtro .= " situacao_id = " . $val;
+      }
+      if (isset($_GET["tipo"]) && trim($_GET["tipo"]) != '') {
+        $val = addslashes(trim($_GET["tipo"]));
+        if ($filtro != '')
+          $filtro .= ' AND ';
+        $filtro .= " diaria_tipo_id = " . $val;
+      }
+      if (isset($_GET["data_inicio"]) && trim($_GET["data_inicio"]) != '') {
+        $val = addslashes(trim($_GET["data_inicio"]));
+        if ($filtro != '')
+          $filtro .= ' AND ';
+        $arr = explode('/', $val);
+        $filtro .= " data_pedido >= '" . $arr[2] . '-' . $arr[1] . '-' . $arr[0] . "'";
+      }
+      if (isset($_GET["data_fim"]) && trim($_GET["data_fim"]) != '') {
+        $val = addslashes(trim($_GET["data_fim"]));
+        if ($filtro != '')
+          $filtro .= ' AND ';
+        $arr = explode('/', $val);
+        $filtro .= " data_pedido <= '" . $arr[2] . '-' . $arr[1] . '-' . $arr[0] . "'";
+      }
+      $list = $dao->Listar($filtro);
       $this->SetModel($list);
-      $this->RenderView("solicitante");
+      $this->RenderView('relatorio');
+
+    } else {
+      $this->RedirectTo("/", "");
+    }
+  }
+  public function Pagar()
+  {
+    if (!$this->InPapel("auditor")) {
+      $this->RedirectTo("/");
+    } else {
+      $dao = new DiariaDAO();
+      if ($this->IsPost()) {
+        $id = $_POST["id"];
+        $result = $dao->Find($id);
+        $result->setStatus("P");//Pago;
+
+        $dao->Salvar($result);
+
+        $daoSit = new DiariaSituacaoDAO();
+
+        $ds = new DiariaSituacao();
+        $ds->setDiaria($result);
+        $us = new Usuario();
+        $us->setId($this->currentUser->getId());
+        $ds->setUsuario($us);
+
+        $sit = new Situacao();
+        $sit->setId(3);
+        $ds->setSituacao($sit);
+        $daoSit->Salvar($ds);
+
+        $this->RedirectTo("/");
+
+      } else {
+        $result = $dao->Listar("status='A'");
+        $this->SetModel($result);
+        $this->RenderView("aprovar");
+      }
+    }
+  }
+  public function Aprovar()
+  {
+    if (!$this->InPapel("auditor") && !$this->InPapel("aprovador")) {
+      $this->RedirectTo("/");
+    } else {
+      $dao = new DiariaDAO();
+      if ($this->IsPost()) {
+        $id = $_POST["id"];
+        $result = $dao->Find($id);
+        $result->setStatus("A");//aprovado;
+
+        $dao->Salvar($result);
+
+        $daoSit = new DiariaSituacaoDAO();
+
+        $ds = new DiariaSituacao();
+        $ds->setDiaria($result);
+        $us = new Usuario();
+        $us->setId($this->currentUser->getId());
+        $ds->setUsuario($us);
+
+        $sit = new Situacao();
+        $sit->setId(2);
+        $ds->setSituacao($sit);
+        $daoSit->Salvar($ds);
+
+        $this->RedirectTo("/");
+
+      } else {
+        $result = $dao->Listar("status='E'");
+        $this->SetModel($result);
+        $this->RenderView("aprovar");
+      }
     }
 
   }
-
-  public function Aprovar()
+  public function Solicitacao()
   {
     $dao = new DiariaDAO();
-    if ($this->IsPost()) {
-      $id = $_POST["id"];
-      $result = $dao->Find($id);
-      $result->setStatus("A");//aprovado;
-
-      $dao->Salvar($result);
-
-      $daoSit = new DiariaSituacaoDAO();
-
-      $ds = new DiariaSituacao();
-      $ds->setDiaria($result);
-      $us = new Usuario();
-      $us->setId($this->currentUser->getId());
-      $ds->setUsuario($us);
-
-      $sit = new Situacao();
-      $sit->setId(2);
-      $ds->setSituacao($sit);
-      $daoSit->Salvar($ds);
-
-      $this->RedirectTo("/");
-
-    } else {
-      $result = $dao->Listar("status='E'");
-      $this->SetModel($result);
-      $this->RenderView("aprovar");
-    }
-
+    $id = $_GET["id"];
+    $result = $dao->Find($id);
+    $this->SetModel($result);
+    $this->RenderView('aprovarDetalhes');
   }
   public function Detalhes()
   {
     $dao = new DiariaDAO();
-    if ($this->InPapel("aprovador")) {
-      $id = $_GET["id"];
-      $result = $dao->Find($id);
-      $this->SetModel($result);
-      $this->RenderView('aprovarDetalhes');
-    } else if ($this->InPapel("solicitante")) {
-      $daoSit = new ViewDiariaSituacaoDAO();
-      $id = $_GET["id"];
-      $result = $dao->Find($id);
-      $this->SetModel($result);
 
-      $sits = $daoSit->Listar("diaria_id=" . $id);
-      $this->SetViewBag('situacao', $sits);
-      $this->RenderView('solicitanteDetalhes');
-    }
+    $daoSit = new ViewDiariaSituacaoDAO();
+    $id = $_GET["id"];
+    $result = $dao->Find($id);
+    $this->SetModel($result);
+
+    $sits = $daoSit->Listar("diaria_id=" . $id);
+    $this->SetViewBag('situacao', $sits);
+    $this->RenderView('solicitanteDetalhes');
+
   }
 
   public function Novo()
@@ -149,7 +231,7 @@ class DiariaController extends ControllerBase
     $diario->setQuantidade($_POST["quantidade"]);
     $diario->setDataCriacao($_POST["data_criacao"]);
     $diario->setStatus($_POST["status"]);
-    $diario->setPedido($_POST["pedido"]);
+    $diario->setPedido(addslashes(trim($_POST["pedido"])));
 
     $dt = new DiarioTipo();
     $dt->setId($_POST["diaria_tipo_id"]);

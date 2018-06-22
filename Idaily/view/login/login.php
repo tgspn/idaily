@@ -28,10 +28,27 @@ if (in_array('erro', $query)) {
   echo "<div style='color:red'>" . $mensagem . "</div><br/>";
 }
 ?>
-<form action="login/Entrar" method="post" class="login-form">
-	<input type="hidden" name="action" value="login"/>
-	<input type="text" name="username" placeholder="username"/>
-	<input type="password" name="password" placeholder="password"/>
-	<button type="submit">login</button>
-</form>
-<a href="login/registro">Criar conta</a>
+
+
+<div class="col-lg-12 text-center">
+  <h1 class="mt-5">[Diárias]</h1>
+  <div class="row justify-content-md-center">
+    <div class="col-lg-4 text-left">
+      <form class="register-form  needs-validation"  action="/login/Entrar" method="post" novalidate>
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="nome" class="form-control" id="username" name="username" placeholder="Usuário" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input type="password" class="form-control" id="password" placeholder="Senha" name="password"   autocomplete="off" required>
+          <div class="invalid-feedback">A senha deve conter letras minúsculas, maiúscula e números</div>
+       </div>
+        <input class="form-check-input" type="hidden" name="papel_id" id="papel" value="4">
+
+        	<button type="submit" class="btn btn primary">login</button>
+      </form>
+      <a href="/login/registro">Criar conta</a>
+    </div>
+  </div>
+</div>

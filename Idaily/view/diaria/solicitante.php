@@ -86,7 +86,7 @@ $model=ViewHelper::GetModel();
                <th scope="row">' . StringHelper::ParseBrDate($value->getDataCriacao()). '</th>
                <td >'.$value->getDiariaTipo()->getNome().'</td>
                <td>'.$value->getQuantidade().'</td>
-               <td>'.$value->getQuantidade()*$value->getDiariaTipo()->getValor().'</td>
+               <td>R$ ' . number_format($value->getQuantidade()*$value->getDiariaTipo()->getValor(), 2, ',', '.').'</td>
                <td>'.$statusTexto.'</td>
              </tr>';
            }
@@ -97,10 +97,13 @@ $model=ViewHelper::GetModel();
      </table>
     </div>
 
-    <div class=" collapse">
+    <div class="collapseble collapse">
       <div class="card" >
         <div class="card-header">
           Detalhes
+          <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
       <div class="card-board">
         <div class="text-left col" >
@@ -132,10 +135,12 @@ $model=ViewHelper::GetModel();
 <script>
   $("tr.row1").click(x => {
 
-    $(".collapse").addClass("col-md-6");
-    $(".collapse").removeClass("collapse");
-    $(".fixed").removeClass("col-md-12");
-    $(".fixed").addClass("col-md-6");
+    $(".close").click(()=>{
+      $(".collapseble").removeClass("col-md-6");
+      $(".collapseble").addClass("collapse");
+      $(".fixed").addClass("col-md-12");
+      $(".fixed").removeClass("col-md-6");
+    });
 
     var id=$(x.currentTarget).attr('data-id');
     $.ajax({
@@ -143,6 +148,10 @@ $model=ViewHelper::GetModel();
       data:{id: id},
       success: (data) => {
         $(".card-board").html(data);
+        $(".collapse").addClass("col-md-6");
+        $(".collapse").removeClass("collapse");
+        $(".fixed").removeClass("col-md-12");
+        $(".fixed").addClass("col-md-6");
       }
     });
   });
