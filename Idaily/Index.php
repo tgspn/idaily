@@ -138,10 +138,10 @@ function GetErrorMensage()
 
 <body>
   <?php
-  if($isLogged){
-echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  if ($isLogged) {
+    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="/">IDaily</a>
+      <a class="navbar-brand" href="/">[Diárias]</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -150,63 +150,61 @@ echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <ul class="navbar-nav ml-auto">';
 
 
-          if ($isLogged) {
-            echo '  <li class="nav-item active">
+    if ($isLogged) {
+      echo '  <li class="nav-item active">
                 <a class="nav-link" href="/">Home
                   <span class="sr-only">(current)</span>
                 </a>
               </li>';
-            if ($isAdmin) {
-              echo '<li class="nav-item">
+      if ($isAdmin) {
+        echo '<li class="nav-item">
               <a class="nav-link" href="/usuario">Usuarios</a>
               </li>';
               // echo '<li class="nav-item">
               //   <a class="nav-link" href="/Diaria/Tipo">Tipo de diária</a>
               //   </li>';
-            }
-            if (ViewHelper::InPapel("aprovador")) {
-              echo '<li class="nav-item">
+      }
+      if (ViewHelper::InPapel("aprovador")) {
+        echo '<li class="nav-item">
               <a class="nav-link" href="/Diaria/Listar">Minhas Diarias</a>
             </li>';
-              echo '<li class="nav-item">
+        echo '<li class="nav-item">
               <a class="nav-link" href="/Diaria/Aprovar">Aprovar Diarias</a>
             </li>';
-            }
+      }
 
-            if (ViewHelper::InPapel("solicitante")) {
-              echo '<li class="nav-item">
+      if (ViewHelper::InPapel("solicitante")) {
+        echo '<li class="nav-item">
               <a class="nav-link" href="/Diaria/Listar">Diarias</a>
             </li>';
-            }
+      }
 
-            if(ViewHelper::InPapel("auditor"))
-            {
-              echo '<li class="nav-item">
+      if (ViewHelper::InPapel("auditor")) {
+        echo '<li class="nav-item">
               <a class="nav-link" href="/Diaria/Listar">Minhas Diarias</a>
             </li>';
-            echo '<li class="nav-item">
+        echo '<li class="nav-item">
             <a class="nav-link" href="/Diaria/Pagar">Pagar Diarias</a>
           </li>';
-            }
-            if(ViewHelper::InPapel('admin')||ViewHelper::InPapel('auditor')||ViewHelper::InPapel('aprovador'))
-            {
-              echo "<li class='nav-item'><a href='/Diaria/Relatorio' class='nav-link'>Relatório</a></li>";
-            }
+      }
+      if (ViewHelper::InPapel('admin') || ViewHelper::InPapel('auditor') || ViewHelper::InPapel('aprovador')) {
+        echo "<li class='nav-item'><a href='/Diaria/Relatorio' class='nav-link'>Relatório</a></li>";
+      }
 
 
-            echo "<li class='nav-item'><a class='nav-link'>&nbsp;&nbsp;".ViewHelper::GetCurrentUser()->getNome()."</a></li>";
+      echo "<li class='nav-item'><a class='nav-link'>&nbsp;&nbsp;" . ViewHelper::GetCurrentUser()->getNome() . "</a></li>";
 
-            echo '<li class="nav-item">
+      echo '<li class="nav-item">
             <a class="nav-link" href="/Login/Sair">Sair</a>
           </li>';
 
-          }
-echo '
+    }
+    echo '
         </ul>
       </div>
     </div>
   </nav>';
-}
+  }
   ?>
   <!-- Page Content -->
   <div class="container">
