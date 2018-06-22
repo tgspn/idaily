@@ -48,7 +48,7 @@ if (in_array('erro', $query)) {
 
         	<button type="submit" class="btn btn primary">login</button>
       </form>
-      <a href="/login/registro">Criar conta</a>
+      <!-- <a href="/login/registro">Criar conta</a> -->
     </div>
   </div>
 </div>
